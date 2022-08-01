@@ -1,7 +1,7 @@
 # docker-compose up --build
 version: '2.4'
 services:
-  analysis_worker:
+  calcium_imaging_worker:
     build: # only necessary if rebuilding image
       context: .
       dockerfile: calcium_imaging_worker.Dockerfile
@@ -11,7 +11,7 @@ services:
         - DEPLOY_KEY
         - REPO_OWNER
         - REPO_NAME
-    image: registry.vathes.com/sciops/analysis-${REPO_NAME}:py${PY_VER}-${DIST}-v${WORKFLOW_VERSION}
+    image: registry.vathes.com/sciops/calcium_imaging-${REPO_NAME}:py${PY_VER}-${DIST}-v${WORKFLOW_VERSION}
     environment:
       - CONTAINER_USER
       - DJ_HOST
@@ -23,8 +23,8 @@ services:
       - IMAGING_ROOT_DATA_DIR=/home/${CONTAINER_USER}/inbox
       - IMAGING_PROCESSED_DATA_DIR=/home/${CONTAINER_USER}/outbox
     volumes:
-      - ${IMAGING_ROOT_DATA_DIR}:/home/${CONTAINER_USER}/inbox
-      - ${IMAGING_PROCESSED_DATA_DIR}:/home/${CONTAINER_USER}/outbox
+      - ${ROOT_DATA_DIR}:/home/${CONTAINER_USER}/inbox
+      - ${PROCESSED_DATA_DIR}:/home/${CONTAINER_USER}/outbox
     scale: ${WORKER_COUNT:-1}
     command:
       - /bin/bash
