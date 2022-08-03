@@ -15,17 +15,13 @@ ARG REPO_NAME
 
 WORKDIR $HOME
 
-# Install Facemap
-RUN git clone https://github.com/MouseLand/facemap.git
-RUN pip install ./facemap
-
 # Clone the workflow
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     GIT_SSH_COMMAND="ssh -i $HOME/.ssh/sciops_deploy.ssh" \
     git clone git@github.com:${REPO_OWNER}/${REPO_NAME}.git
 
 # Install C++ compilers for CaImAn
-RUN cp ./${REPO_NAME}/apt_requirements.txt /tmp/
+RUN cp ./${REPO_NAME}/docker/caiman_apt_requirements.txt /tmp/
 RUN /entrypoint.sh echo "Installed dependencies."
 
 # Install the workflow

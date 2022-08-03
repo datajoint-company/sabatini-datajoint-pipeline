@@ -4,7 +4,7 @@ services:
   calcium_imaging_worker:
     build: # only necessary if rebuilding image
       context: .
-      dockerfile: calcium_imaging_worker.Dockerfile
+      dockerfile: ./calcium_imaging_worker.Dockerfile
       args:
         - PY_VER
         - DIST
