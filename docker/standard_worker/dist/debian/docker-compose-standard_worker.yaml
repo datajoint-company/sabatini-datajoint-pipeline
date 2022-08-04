@@ -4,15 +4,15 @@ services:
   standard_worker:
     build:
       # only necessary if rebuilding image
-      context: .
-      dockerfile: ./standard_worker.Dockerfile
+      context: ../../
+      dockerfile: ./dist/debian/standard_worker.Dockerfile
       args:
         - PY_VER
-        - DIST
         - DEPLOY_KEY
+        - WORKER_BASE_HASH
         - REPO_OWNER
         - REPO_NAME
-    image: registry.vathes.com/sciops/standard_${REPO_NAME}:py${PY_VER}-${DIST}-${WORKFLOW_VERSION}
+    image: registry.vathes.com/sciops/standard_${REPO_NAME}:py${PY_VER}-debian-${WORKFLOW_VERSION}
     environment:
       - CONTAINER_USER
       - DJ_HOST
@@ -26,7 +26,6 @@ services:
     volumes:
       - ${ROOT_DATA_DIR}:/home/${CONTAINER_USER}/inbox
       - ${PROCESSED_DATA_DIR}:/home/${CONTAINER_USER}/outbox
-      - ./apt_requirements.txt:/tmp/apt_requirements.txt
     scale: ${WORKER_COUNT:-1}
     command:
       - /bin/bash
