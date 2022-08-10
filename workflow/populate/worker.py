@@ -1,21 +1,14 @@
 import datajoint as dj
 from datajoint_utilities.dj_worker import DataJointWorker, WorkerLog, ErrorLog
 from workflow import db_prefix
-from workflow.pipeline import session, ephys, scan, imaging, model as dlc_model, train as dlc_train
-<<<<<<< HEAD
-from workflow.support import ephys_support, imaging_support, facemap_support, dlc_model_support
-from .ingest_tasks import generate_processing_task
-=======
->>>>>>> upstream-sciops-dev
+from workflow.pipeline import session, ephys, scan, event, imaging, model as dlc_model, train as dlc_train
+from workflow.support import ephys_support, imaging_support, dlc_model_support
+from .ingest_tasks import generate_processing_task, generate_poseestimation_task
 
 logger = dj.logger
 
 __all__ = ["standard_worker", "dlc_worker", "calcium_imaging_worker", \
-<<<<<<< HEAD
      "spike_sorting_worker", "WorkerLog",  "ErrorLog"]
-=======
-     "spike_sorting_worker", "WorkerLog", "ErrorLog"]
->>>>>>> upstream-sciops-dev
 
 def auto_generate_probe_insertions():
     for skey in (session.Session - ephys.ProbeInsertion).fetch('KEY'):
@@ -35,7 +28,6 @@ def auto_generate_clustering_tasks():
             logger.error(str(error))
             ErrorLog.log_exception(rkey, ephys.ClusteringTask.auto_generate_entries, error)
 
-<<<<<<< HEAD
 def auto_generate_processing_tasks():
     for scan_key in (scan.ScanInfo - imaging.ProcessingTask).fetch("KEY"):
         try:
@@ -53,9 +45,26 @@ def auto_generate_processing_tasks():
                 f"Success making {scan_key} -> {imaging.ProcessingTask.full_table_name}"
             )
 
+def auto_generate_poseestimation_tasks():
+    for video_key in (dlc_model.VideoRecording - dlc_model.PoseEstimationTask).fetch(
+        "KEY"
+    ):
+        try: 
+            logger.debug(
+                f"Making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name}"
+            )
+            generate_poseestimation_task(video_key)
+        except Exception as error:
+            logger.debug(
+                f"Error making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name} - {str(error)}"
+            )
+            ErrorLog.log_exception(video_key, generate_poseestimation_task, error)
+        else:
+            logger.debug(
+                f"Success making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name}"
+            )
 
-=======
->>>>>>> upstream-sciops-dev
+
 # -------- Define process(s) --------
 org_name, workflow_name, _ = db_prefix.split("_")
 
@@ -71,7 +80,8 @@ standard_worker = DataJointWorker('standard_worker',
                                   sleep_duration=30,
                                   autoclear_error_patterns=autoclear_error_patterns)
 
-<<<<<<< HEAD
+standard_worker(event.BehaviorIngestion)
+
 standard_worker(ephys_support.PreProbeInsertion)
 standard_worker(auto_generate_probe_insertions)
 standard_worker(ephys_support.PreProbeInsertion.clean_up)
@@ -93,20 +103,6 @@ standard_worker(ephys_support.PreWaveformSet.clean_up)
 standard_worker(ephys_support.PreLFP)
 standard_worker(ephys.LFP, max_calls=1)
 standard_worker(ephys_support.PreLFP.clean_up)
-=======
-standard_worker(auto_generate_probe_insertions)
-
-standard_worker(ephys.EphysRecording, max_calls=5)
-
-standard_worker(auto_generate_clustering_tasks)
-
-standard_worker(ephys.CuratedClustering, max_calls=5)
-
-standard_worker(ephys.WaveformSet, max_calls=5)
-
-standard_worker(ephys.LFP, max_calls=5)
-
->>>>>>> upstream-sciops-dev
 
 # spike_sorting process for GPU required jobs
 spike_sorting_worker = DataJointWorker('spike_sorting_worker',
@@ -118,7 +114,6 @@ spike_sorting_worker = DataJointWorker('spike_sorting_worker',
 
 spike_sorting_worker(ephys.Clustering, max_calls=6)
 
-<<<<<<< HEAD
 # Imaging analyses run by standard worker
 
 standard_worker(imaging_support.PreScanInfo, max_calls=1)
@@ -145,20 +140,6 @@ standard_worker(imaging_support.PreActivity.clean_up)
 
 
 # calcum imaging worker
-=======
-# imaging
-standard_worker(scan.ScanInfo, max_calls=5)
-
-standard_worker(imaging.MotionCorrection, max_calls=5)
-
-standard_worker(imaging.Segmentation, max_calls=5)
-
-standard_worker(imaging.Fluorescence, max_calls=5)
-
-standard_worker(imaging.Activity, max_calls=5)
-
-# analysis worker
->>>>>>> upstream-sciops-dev
 calcium_imaging_worker = DataJointWorker(
     "calcium_imaging_worker",
     worker_schema_name,
@@ -181,5 +162,16 @@ dlc_worker = DataJointWorker(
     sleep_duration=30,
     autoclear_error_patterns=autoclear_error_patterns,
 )
+# dlc_worker(dlc_model.RecordingInfo, max_calls=5)
+# dlc_worker(dlc_model.PoseEstimation, max_calls=5)
+
+dlc_worker(dlc_model_support.PreRecordingInfo, max_calls=5)
 dlc_worker(dlc_model.RecordingInfo, max_calls=5)
+dlc_worker(dlc_model_support.PreRecordingInfo.clean_up, max_calls=5)
+
+dlc_worker(auto_generate_poseestimation_tasks)
+
+dlc_worker(dlc_model_support.PrePoseEstimation, max_calls=5)
 dlc_worker(dlc_model.PoseEstimation, max_calls=5)
+dlc_worker(dlc_model_support.PostPoseEstimation, max_calls=5)
+dlc_worker(dlc_model_support.PrePoseEstimation.clean_up)

@@ -38,7 +38,7 @@ def load_sessions_df(file="sessions.csv"):
     # --- SessionDirectory --
     # Construct the session_dir
     df["session_dir"] = df["aws_nd2_path"].apply(
-        lambda x: Path(x).relative_to("iub-lulab_devo/inbox").parent.parent.as_posix()
+        lambda x: Path(x).relative_to("sciops-dev_sabatini/inbox").parent.parent.as_posix()
     )
 
     # --- Scan ---
