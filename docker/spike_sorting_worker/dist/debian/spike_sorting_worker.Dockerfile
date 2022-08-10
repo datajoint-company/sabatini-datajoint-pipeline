@@ -113,17 +113,13 @@ RUN git clone https://github.com/ttngu207/ecephys_spike_sorting.git
 #RUN pip install argschema==1.* marshmallow==2.*
 
 ## Workflow Array Ephys
-ARG DEPLOY_KEY
 ARG MATLAB_USER
 RUN mkdir $HOME/.ssh
-COPY --chown=${MATLAB_USER} $DEPLOY_KEY $HOME/.ssh/id_ed25519
-RUN chmod u=r,g-rwx,o-rwx $HOME/.ssh/id_ed25519 && \
-   ssh-keyscan github.com >> $HOME/.ssh/known_hosts
 
 USER $MATLAB_USER
 ENV SSL_CERT_DIR=/etc/ssl/certs
 ARG REPO_OWNER
 ARG REPO_NAME
-RUN git clone git@github.com:${REPO_OWNER}/${REPO_NAME}.git && \
+RUN git clone https://github.com/datajoint-company/sciops-dev_sabatini.git && \
    pip install --upgrade pip && \
    pip install --use-deprecated=legacy-resolver ./${REPO_NAME}
