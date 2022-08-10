@@ -1,17 +1,10 @@
 # Need to write custom ingestion for behavioral events
 # Perform Behavioral Data ingestion from events.csv, block.csv, trial.csv
-from numpy import tri
+import numpy as np
 from .ingest_sessions import session, subject
 from workflow.pipeline import event, trial
-from element_interface.utils import (
-    find_root_directory,
-    find_full_path,
-    ingest_csv_to_table,
-)
-
 import pandas as pd
-
-
+from element_interface.utils import ingest_csv_to_table
 
 def generate_behavior_csv(block_csv_path = "./user_data/block.csv",
     trial_csv_path = "./user_data/trial.csv",
@@ -41,6 +34,7 @@ def ingest_events(
     trial_df = pd.read_csv(trial_csv_path)
     event_df = pd.read_csv(event_csv_path)
     
+    # Add subject and session_datetime columns at starts of tables
     block_subj = [subject.fetch('subject') for i in range(len(block_df.rows))]
     block_sess = [session.fetch('session') for i in range(len(block_df.rows))] 
     block_df.insert(0, block_sess, 'session_datetime')
@@ -89,6 +83,7 @@ def ingest_events(
     ]
 
     # Allow direct insert required because element-event has Imported that should be Manual
+    print(f"\n---- Insert events into event and trial schema tables----")
     ingest_csv_to_table(
         csvs,
         tables,
