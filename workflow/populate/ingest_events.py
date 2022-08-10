@@ -97,20 +97,8 @@ def ingest_events(
         allow_direct_insert=True,
     )
 
-    event_df = pd.read_csv(block_csv_path, )
-    print(f"\n---- Insert events into event.BehaviorRecording ----")
-    event.BehaviorRecording.insert(event_df)
 
 
-def ingest_trials(session_key, file="trial.csv"):
-    trial_df = pd.read_csv(file)
-    print(f"\n---- Insert trials into trial.Trial ----")
-    trial.Trial.insert(trial_df)
 
-
-def ingest_blocks(session_key, file="block.csv"):
-    block_df = pd.read_csv(file)
-    print(f"\n---- Insert block into trial.Block ----")
-    trial.Block.insert(block_df)
 
 

@@ -80,8 +80,6 @@ standard_worker = DataJointWorker('standard_worker',
                                   sleep_duration=30,
                                   autoclear_error_patterns=autoclear_error_patterns)
 
-standard_worker(event.BehaviorIngestion)
-
 standard_worker(ephys_support.PreProbeInsertion)
 standard_worker(auto_generate_probe_insertions)
 standard_worker(ephys_support.PreProbeInsertion.clean_up)
