@@ -11,6 +11,6 @@ element-calcium-imaging @ git+https://github.com/datajoint/element-calcium-imagi
 element-interface[scanreader,image_converter,suite2p] @ git+https://github.com/datajoint/element-interface.git
 datajoint-utilities @ git+https://github.com/datajoint-company/datajoint-utilities.git
 
-element-array-ephys-support @ git+ssh://git@github.com/datajoint/element-array-ephys-support.git
+element-array-ephys-support @ git+ssh://git@github.com/dj-sciops/element-array-ephys-support.git
 element-deeplabcut-support @ git+ssh://git@github.com/dj-sciops/element-deeplabcut-support.git
 element-calcium-imaging-support @ git+ssh://git@github.com/dj-sciops/element-calcium-imaging-support.git

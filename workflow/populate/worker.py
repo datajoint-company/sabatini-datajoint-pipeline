@@ -1,9 +1,9 @@
 import datajoint as dj
 from datajoint_utilities.dj_worker import DataJointWorker, WorkerLog, ErrorLog
 from workflow import db_prefix
-from workflow.pipeline import session, ephys, scan, imaging, model as dlc_model, train as dlc_train
-from workflow.support import ephys_support, imaging_support, facemap_support, dlc_model_support
-from .ingest_tasks import generate_processing_task
+from workflow.pipeline import session, ephys, scan, event, imaging, model as dlc_model, train as dlc_train
+from workflow.support import ephys_support, imaging_support, dlc_model_support
+from .ingest_tasks import generate_processing_task, generate_poseestimation_task
 
 logger = dj.logger
 
@@ -43,6 +43,25 @@ def auto_generate_processing_tasks():
         else:
             logger.debug(
                 f"Success making {scan_key} -> {imaging.ProcessingTask.full_table_name}"
+            )
+
+def auto_generate_poseestimation_tasks():
+    for video_key in (dlc_model.VideoRecording - dlc_model.PoseEstimationTask).fetch(
+        "KEY"
+    ):
+        try: 
+            logger.debug(
+                f"Making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name}"
+            )
+            generate_poseestimation_task(video_key)
+        except Exception as error:
+            logger.debug(
+                f"Error making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name} - {str(error)}"
+            )
+            ErrorLog.log_exception(video_key, generate_poseestimation_task, error)
+        else:
+            logger.debug(
+                f"Success making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name}"
             )
 
 
@@ -141,5 +160,16 @@ dlc_worker = DataJointWorker(
     sleep_duration=30,
     autoclear_error_patterns=autoclear_error_patterns,
 )
+# dlc_worker(dlc_model.RecordingInfo, max_calls=5)
+# dlc_worker(dlc_model.PoseEstimation, max_calls=5)
+
+dlc_worker(dlc_model_support.PreRecordingInfo, max_calls=5)
 dlc_worker(dlc_model.RecordingInfo, max_calls=5)
+dlc_worker(dlc_model_support.PreRecordingInfo.clean_up, max_calls=5)
+
+dlc_worker(auto_generate_poseestimation_tasks)
+
+dlc_worker(dlc_model_support.PrePoseEstimation, max_calls=5)
 dlc_worker(dlc_model.PoseEstimation, max_calls=5)
+dlc_worker(dlc_model_support.PostPoseEstimation, max_calls=5)
+dlc_worker(dlc_model_support.PrePoseEstimation.clean_up)

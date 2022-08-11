@@ -8,9 +8,9 @@ services:
       args:
         - PY_VER
         - DEPLOY_KEY
+        - WORKER_BASE_HASH
         - REPO_OWNER
         - REPO_NAME
-        - WORKER_BASE_HASH
     image: registry.vathes.com/sciops/calcium_imaging-${REPO_NAME}:py${PY_VER}-debian-v${WORKFLOW_VERSION}
     environment:
       - CONTAINER_USER
