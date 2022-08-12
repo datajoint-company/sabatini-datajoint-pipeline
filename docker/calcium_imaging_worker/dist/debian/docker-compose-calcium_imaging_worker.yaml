@@ -1,10 +1,10 @@
-# docker-compose up --build
+# docker compose --env-file=../../.env -f docker-compose-calcium_imaging_worker.yaml -p sciops-dev_sabatini_calcium build
 version: '2.4'
 services:
   calcium_imaging_worker:
     build: # only necessary if rebuilding image
-      context: .
-      dockerfile: ./calcium_imaging_worker.Dockerfile
+      context: ../../
+      dockerfile: ./dist/debian/calcium_imaging_worker.Dockerfile
       args:
         - PY_VER
         - DEPLOY_KEY
