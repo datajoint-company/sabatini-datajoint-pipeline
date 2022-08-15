@@ -115,6 +115,12 @@ Diagram.ipynb
 
 # docker
 docker/.env
+docker/spike_sorting_worker/.env
+docker/standard_worker/.env
+docker/calcium_imaging_worker/.env
+docker/dlc_worker/.env
+
+
 
 # vscode
 .vscode/settings.json

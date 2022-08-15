@@ -1,4 +1,4 @@
-# docker-compose -f ./docker/docker-compose-standard_worker.yaml up -d --build 
+# docker compose --env-file=../../.env  -f docker-compose-standard_worker.yaml -p sciops-dev_sabatini_standard build
 version: '2.4'
 services:
   standard_worker:
