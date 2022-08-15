@@ -52,21 +52,7 @@ def get_scan_image_files(scan_key):
 
 
 def get_scan_box_files(scan_key):
-    # Folder structure: root / subject / session / .sbx
-    data_dir = get_imaging_root_data_dir()
-
-    from workflow.pipeline import session
-
-    sess_dir = data_dir / (session.SessionDirectory & scan_key).fetch1("session_dir")
-
-    if not sess_dir.exists():
-        raise FileNotFoundError(f"Session directory not found ({sess_dir})")
-
-    sbx_filepaths = [fp.as_posix() for fp in sess_dir.glob("*.sbx")]
-    if sbx_filepaths:
-        return sbx_filepaths
-    else:
-        raise FileNotFoundError(f"No .sbx file found in {sess_dir}")
+    raise NotImplementedError
 
 
 def get_nd2_files(scan_key):
