@@ -1,4 +1,5 @@
-# docker-compose -f ./docker/docker-compose-spike_sorting_local_worker.yaml up -d --build
+# cd into spike_sorting_worker/dist/debian then run
+# docker compose --env-file=../../.env -f ./docker-compose-spike_sorting_local_worker.yaml -p sciops-dev_sabatini_spike up -d --build
 version: '2.4'
 services:
   spike_sorting_worker:

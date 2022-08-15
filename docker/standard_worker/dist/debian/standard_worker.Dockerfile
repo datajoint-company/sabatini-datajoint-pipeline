@@ -13,7 +13,10 @@ ARG REPO_NAME
 WORKDIR $HOME
 
 # Clone the workflow
-RUN git clone https://github.com/datajoint-company/sciops-dev_sabatini.git
+RUN git clone -b sciops-dev https://github.com/datajoint-company/sciops-dev_sabatini.git
 
 # Install the workflow
-RUN pip install ./${REPO_NAME}
+ARG DEPLOY_KEY
+COPY --chown=anaconda $DEPLOY_KEY $HOME/.ssh/id_ed25519
+RUN ssh-keyscan github.com >> $HOME/.ssh/known_hosts && \
+    pip install ./${REPO_NAME}

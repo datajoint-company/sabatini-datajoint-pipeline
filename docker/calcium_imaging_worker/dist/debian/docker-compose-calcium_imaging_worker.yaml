@@ -1,4 +1,4 @@
-# docker-compose up --build
+# docker compose --env-file=../../.env -f docker-compose-calcium_imaging_worker.yaml -p sciops-dev_sabatini_calcium build
 version: '2.4'
 services:
   calcium_imaging_worker:
