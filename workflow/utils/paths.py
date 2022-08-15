@@ -56,22 +56,7 @@ def get_scan_box_files(scan_key):
 
 
 def get_nd2_files(scan_key):
-    # Folder structure: root / subject / session_id / scan_no /.nd2
-    data_dir = get_imaging_root_data_dir()
-
-    from workflow.pipeline import session
-
-    sess_dir = data_dir / (session.SessionDirectory & scan_key).fetch1("session_dir")
-
-    if not sess_dir.exists():
-        raise FileNotFoundError(f"Session directory not found ({sess_dir})")
-
-    # In this workflow, there is always one scan per session: "scan_0"
-    nd2_filepaths = [fp.as_posix() for fp in (sess_dir / "scan_0").glob("*.nd2")]
-    if nd2_filepaths:
-        return nd2_filepaths
-    else:
-        raise FileNotFoundError(f"No .nd2 file found in {sess_dir}")
+    raise NotImplementedError
 
 
 def get_dlc_root_data_dir():
