@@ -22,8 +22,8 @@ services:
       - DATABASE_PREFIX
       - AWS_ACCESS_KEY
       - AWS_ACCESS_SECRET
-      - IMAGING_ROOT_DATA_DIR=/home/${CONTAINER_USER}/inbox
-      - IMAGING_PROCESSED_DATA_DIR=/home/${CONTAINER_USER}/outbox
+      - RAW_ROOT_DATA_DIR=/home/${CONTAINER_USER}/inbox
+      - PROCESSED_ROOT_DATA_DIR=/home/${CONTAINER_USER}/outbox
     deploy:
       resources:
         reservations:

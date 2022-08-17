@@ -30,8 +30,8 @@ services:
       - DATABASE_PREFIX
       - AWS_ACCESS_KEY
       - AWS_ACCESS_SECRET
-      - EPHYS_ROOT_DATA_DIR=/home/${MATLAB_USER}/inbox
-      - EPHYS_PROCESSED_DATA_DIR=/home/${MATLAB_USER}/outbox
+      - RAW_ROOT_DATA_DIR=/home/${CONTAINER_USER}/inbox
+      - PROCESSED_ROOT_DATA_DIR=/home/${CONTAINER_USER}/outbox
       - ecephys_directory
       - kilosort_repository
       - npy_matlab_repository
