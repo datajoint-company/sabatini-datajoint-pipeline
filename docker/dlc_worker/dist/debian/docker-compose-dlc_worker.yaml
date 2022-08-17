@@ -1,4 +1,5 @@
-# docker-compose up --build
+# cd into dlc_worker/dist/debian/ then run 
+# docker compose --env-file=../../.env -f docker-compose-dlc_worker.yaml
 version: '2.4'
 services:
   dlc_worker:
@@ -12,7 +13,7 @@ services:
         - WORKER_BASE_HASH
         - REPO_OWNER
         - REPO_NAME
-    image: registry.vathes.com/sciops/analysis-${REPO_NAME}:py${PY_VER}-debian-v${WORKFLOW_VERSION}
+    image: registry.vathes.com/sciops/dlc-${REPO_NAME}:py${PY_VER}-debian-v${WORKFLOW_VERSION}
     runtime: nvidia
     environment:
       - CONTAINER_USER
