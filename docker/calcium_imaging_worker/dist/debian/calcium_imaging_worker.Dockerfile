@@ -3,8 +3,8 @@ ARG WORKER_BASE_HASH
 FROM datajoint/djbase:py${PY_VER}-debian-${WORKER_BASE_HASH}
 
 USER root
-RUN apt update && \
-    apt-get install -y ssh git
+RUN apt-get update && \
+    apt-get install -y ssh git ffmpeg libsm6 libxext6
 
 USER anaconda:anaconda
 
