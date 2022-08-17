@@ -21,7 +21,6 @@ Equipment = lab.Equipment
 @lab.schema
 class BrainRegion(dj.Manual):
     definition = """
-    -> master
     acronym: varchar(32)
     ---
     region_name: varchar(128)
