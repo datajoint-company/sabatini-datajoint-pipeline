@@ -4,13 +4,17 @@ FROM datajoint/djbase:py${PY_VER}-debian-${WORKER_BASE_HASH}
 
 USER root
 RUN apt-get update && \
-    apt-get install -y ssh git ffmpeg libsm6 libxext6
+    apt-get install -y ssh git vim nano
 
 USER anaconda:anaconda
 
 ARG REPO_OWNER
 ARG REPO_NAME
 WORKDIR $HOME
+
+# Install C++ compilers
+RUN cp ./${REPO_NAME}/apt_requirements.txt /tmp/
+RUN /entrypoint.sh echo "Installed dependencies."
 
 # Clone the workflow
 RUN git clone -b sciops-dev https://github.com/datajoint-company/sciops-dev_sabatini.git

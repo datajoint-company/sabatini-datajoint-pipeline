@@ -4,7 +4,7 @@ FROM datajoint/djbase:py${PY_VER}-debian-${WORKER_BASE_HASH}
 
 USER root
 RUN apt-get update && \
-    apt-get install -y ssh git ffmpeg libsm6 libxext6
+    apt-get install -y ssh git vim nano
 
 USER anaconda:anaconda
 
