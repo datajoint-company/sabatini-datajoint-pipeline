@@ -4,7 +4,7 @@ import yaml
 import numpy as np
 from pathlib import Path
 from .ingest_sessions import load_sessions_df
-from workflow.pipeline import scan, imaging, fbe, dlc
+from workflow.pipeline import scan, imaging, dlc
 from workflow.support import FileManifest
 from workflow import db_prefix
 
