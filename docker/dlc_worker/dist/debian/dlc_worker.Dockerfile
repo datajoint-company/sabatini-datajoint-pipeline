@@ -17,13 +17,18 @@ RUN git clone https://github.com/DeepLabCut/DeepLabCut.git
 RUN pip install ./DeepLabCut
 
 # Clone the workflow
-RUN git clone https://github.com/datajoint-company/sciops-dev_sabatini.git
+RUN git clone -b sciops-dev https://github.com/datajoint-company/sciops-dev_sabatini.git
 
 # Install C++ compilers for CaImAn
 RUN cp ./${REPO_NAME}/apt_requirements.txt /tmp/
 RUN /entrypoint.sh echo "Installed dependencies."
 
-# Install the workflow
-RUN pip install ./${REPO_NAME}
+# Install the workflow 
+# ssh keyscan required due to "support" pipeline dependency being private
+ARG DEPLOY_KEY
+COPY --chown=anaconda $DEPLOY_KEY $HOME/.ssh/id_ed25519
+RUN ssh-keyscan github.com >> $HOME/.ssh/known_hosts && \
+    pip install ./${REPO_NAME}
+
 
 
