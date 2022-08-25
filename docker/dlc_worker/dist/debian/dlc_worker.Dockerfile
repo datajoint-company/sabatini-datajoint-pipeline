@@ -19,13 +19,15 @@ RUN pip install ./DeepLabCut
 # Clone the workflow
 RUN git clone -b sciops-dev https://github.com/datajoint-company/sciops-dev_sabatini.git
 
+# Install C++ compilers for CaImAn
+RUN cp ./${REPO_NAME}/apt_requirements.txt /tmp/
+RUN /entrypoint.sh echo "Installed dependencies."
+
 # Install the workflow
 ARG DEPLOY_KEY
 COPY --chown=anaconda $DEPLOY_KEY $HOME/.ssh/id_ed25519
 RUN ssh-keyscan github.com >> $HOME/.ssh/known_hosts && \
     pip install ./${REPO_NAME}
 
-# Install C++ compilers for CaImAn
-RUN cp ./${REPO_NAME}/apt_requirements.txt /tmp/
-RUN /entrypoint.sh echo "Installed dependencies."
+
 
