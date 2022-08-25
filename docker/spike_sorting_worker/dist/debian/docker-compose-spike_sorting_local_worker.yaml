@@ -50,7 +50,7 @@ services:
     volumes:
       #- /tmp/.X11-unix:/tmp/.X11-unix:rw # only necessary for GUI image
       #- ./licenses/${MATLAB_VERSION}_joseph_license.lic:/home/muser/license_${MATLAB_VERSION}.lic:ro # Must specify MATLAB_LICENSE variable or license file volume mount
-      - /home/ubuntu/neuropixel/matlab-docker/matlab/licenses/${MATLAB_VERSION}_joseph_license.lic:/home/muser/.MATLAB/licenses/license_${MATLAB_VERSION}.lic:ro # Must specify MATLAB_LICENSE variable or license file volume mount
+      - ${MATLAB_LICENSE_PATH}:/home/muser/.MATLAB/licenses/license_${MATLAB_VERSION}.lic:ro # Must specify MATLAB_LICENSE variable or license file volume mount
       - /home/ubuntu/neuropixel/data_for_ecephys:/home/muser/neuropixel/data_for_ecephys
       - ${ROOT_DATA_DIR}:/home/${MATLAB_USER}/inbox
       - ${PROCESSED_DATA_DIR}:/home/${MATLAB_USER}/outbox
