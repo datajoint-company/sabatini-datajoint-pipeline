@@ -5,7 +5,7 @@ from .file_manifest import FileManifest, support_db_prefix
 
 __all__ = ["dlc_model_support"]
 
-# ---- support pipeline for facemap ----
+# ---- support pipeline for deeplabcut ----
 from element_deeplabcut_support import dlc_model_support
 
 # rework key_source

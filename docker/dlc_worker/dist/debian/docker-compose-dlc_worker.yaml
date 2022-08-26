@@ -1,5 +1,5 @@
 # cd into dlc_worker/dist/debian/ then run 
-# docker compose --env-file=../../.env -f docker-compose-dlc_worker.yaml
+# docker compose --env-file=../../.env -f docker-compose-dlc_worker.yaml -p sciops-dev_sabatini_dlc build 
 version: '2.4'
 services:
   dlc_worker:
