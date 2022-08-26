@@ -3,67 +3,11 @@ from datajoint_utilities.dj_worker import DataJointWorker, WorkerLog, ErrorLog
 from workflow import db_prefix
 from workflow.pipeline import session, ephys, scan, event, imaging, model as dlc_model, train as dlc_train
 from workflow.support import ephys_support, imaging_support, dlc_model_support
-from .ingest_tasks import generate_processing_task, generate_poseestimation_task
 
 logger = dj.logger
 
 __all__ = ["standard_worker", "dlc_worker", "calcium_imaging_worker", \
      "spike_sorting_worker", "WorkerLog",  "ErrorLog"]
-
-def auto_generate_probe_insertions():
-    for skey in (session.Session - ephys.ProbeInsertion).fetch('KEY'):
-        try:
-            logger.debug(f"Making {skey} -> {ephys.ProbeInsertion.full_table_name}")
-            ephys.ProbeInsertion.auto_generate_entries(skey)
-            logger.debug(f"Success making {skey} -> {ephys.ProbeInsertion.full_table_name}")
-        except Exception as error:
-            logger.debug(f"Error making {skey} -> {ephys.ProbeInsertion.full_table_name} - {str(error)}")
-            ErrorLog.log_exception(skey, ephys.ProbeInsertion.auto_generate_entries, error)
-
-def auto_generate_clustering_tasks():
-    for rkey in (ephys.EphysRecording - ephys.ClusteringTask).fetch('KEY'):
-        try:
-            ephys.ClusteringTask.auto_generate_entries(rkey, paramset_idx=0)
-        except Exception as error:
-            logger.error(str(error))
-            ErrorLog.log_exception(rkey, ephys.ClusteringTask.auto_generate_entries, error)
-
-def auto_generate_processing_tasks():
-    for scan_key in (scan.ScanInfo - imaging.ProcessingTask).fetch("KEY"):
-        try:
-            logger.debug(
-                f"Making {scan_key} -> {imaging.ProcessingTask.full_table_name}"
-            )
-            generate_processing_task(scan_key)
-        except Exception as error:
-            logger.debug(
-                f"Error making {scan_key} -> {imaging.ProcessingTask.full_table_name} - {str(error)}"
-            )
-            ErrorLog.log_exception(scan_key, generate_processing_task, error)
-        else:
-            logger.debug(
-                f"Success making {scan_key} -> {imaging.ProcessingTask.full_table_name}"
-            )
-
-def auto_generate_poseestimation_tasks():
-    for video_key in (dlc_model.VideoRecording - dlc_model.PoseEstimationTask).fetch(
-        "KEY"
-    ):
-        try: 
-            logger.debug(
-                f"Making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name}"
-            )
-            generate_poseestimation_task(video_key)
-        except Exception as error:
-            logger.debug(
-                f"Error making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name} - {str(error)}"
-            )
-            ErrorLog.log_exception(video_key, generate_poseestimation_task, error)
-        else:
-            logger.debug(
-                f"Success making {video_key} -> {dlc_model.PoseEstimationTask.full_table_name}"
-            )
-
 
 # -------- Define process(s) --------
 org_name, workflow_name, _ = db_prefix.split("_")
@@ -83,14 +27,12 @@ standard_worker = DataJointWorker('standard_worker',
 standard_worker(event.BehaviorIngestion, max_calls=5)
 
 standard_worker(ephys_support.PreProbeInsertion)
-standard_worker(auto_generate_probe_insertions)
 standard_worker(ephys_support.PreProbeInsertion.clean_up)
 
 standard_worker(ephys_support.PreEphysRecording)
 standard_worker(ephys.EphysRecording, max_calls=10)
 standard_worker(ephys_support.PreEphysRecording.clean_up)
 
-standard_worker(auto_generate_clustering_tasks)
 
 standard_worker(ephys_support.PreCuratedClustering)
 standard_worker(ephys.CuratedClustering, max_calls=10)
@@ -120,7 +62,6 @@ standard_worker(imaging_support.PreScanInfo, max_calls=1)
 standard_worker(scan.ScanInfo, max_calls=5)
 standard_worker(imaging_support.PreScanInfo.clean_up)
 
-standard_worker(auto_generate_processing_tasks)
 
 standard_worker(imaging_support.PreMotionCorrection, max_calls=2)
 standard_worker(imaging.MotionCorrection, max_calls=5)
@@ -162,14 +103,10 @@ dlc_worker = DataJointWorker(
     sleep_duration=30,
     autoclear_error_patterns=autoclear_error_patterns,
 )
-# dlc_worker(dlc_model.RecordingInfo, max_calls=5)
-# dlc_worker(dlc_model.PoseEstimation, max_calls=5)
 
 dlc_worker(dlc_model_support.PreRecordingInfo, max_calls=5)
 dlc_worker(dlc_model.RecordingInfo, max_calls=5)
 dlc_worker(dlc_model_support.PreRecordingInfo.clean_up, max_calls=5)
-
-dlc_worker(auto_generate_poseestimation_tasks)
 
 dlc_worker(dlc_model_support.PrePoseEstimation, max_calls=5)
 dlc_worker(dlc_model.PoseEstimation, max_calls=5)
