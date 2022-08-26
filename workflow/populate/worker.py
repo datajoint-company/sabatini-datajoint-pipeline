@@ -106,7 +106,7 @@ dlc_worker = DataJointWorker(
 
 dlc_worker(dlc_model_support.PreRecordingInfo, max_calls=5)
 dlc_worker(dlc_model.RecordingInfo, max_calls=5)
-dlc_worker(dlc_model_support.PreRecordingInfo.clean_up, max_calls=5)
+dlc_worker(dlc_model_support.PreRecordingInfo.clean_up)
 
 dlc_worker(dlc_model_support.PrePoseEstimation, max_calls=5)
 dlc_worker(dlc_model.PoseEstimation, max_calls=5)
