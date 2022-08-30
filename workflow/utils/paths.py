@@ -33,6 +33,8 @@ def get_ephys_session_directory(session_key: dict) -> str:
 
     return sess_dir.as_posix()
 
+def get_session_directory():
+    return get_ephys_session_directory()
 
 # for element-calcium-imaging activation
 def get_imaging_root_data_dir():
