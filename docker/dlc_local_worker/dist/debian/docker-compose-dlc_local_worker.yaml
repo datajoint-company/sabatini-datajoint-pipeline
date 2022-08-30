@@ -6,7 +6,7 @@ services:
     build:
       # only necessary if rebuilding image
       context: ../../
-      dockerfile: ./dist/debian/dlc_worker.Dockerfile
+      dockerfile: ./dist/debian/dlc_local_worker.Dockerfile
       args:
         - PY_VER
         - DEPLOY_KEY        

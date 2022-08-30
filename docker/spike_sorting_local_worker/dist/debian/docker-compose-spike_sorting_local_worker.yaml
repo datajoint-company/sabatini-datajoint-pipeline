@@ -6,7 +6,7 @@ services:
     build:
       # only necessary if rebuilding image
       context: ../../
-      dockerfile: ./dist/debian/spike_sorting_worker.Dockerfile
+      dockerfile: ./dist/debian/spike_sorting_local_worker.Dockerfile
       args:
         - DEPLOY_KEY
         - REPO_OWNER
