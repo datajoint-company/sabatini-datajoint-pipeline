@@ -9,10 +9,7 @@ wfs_full_name = "_".join(event.schema.database.split("_")[:2])
 _wf_external_inbox_path = f"{wfs_full_name}/inbox"
 _wf_external_outbox_path = f"{wfs_full_name}/outbox"
 
-__all__ = ["event_support"]
-
 schema = dj.schema(support_db_prefix + "event_support")
-
 @schema
 class PreBehaviorIngestion(dj.Imported):
     definition = """
