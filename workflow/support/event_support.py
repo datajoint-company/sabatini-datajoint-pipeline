@@ -15,7 +15,7 @@ schema = dj.schema(support_db_prefix + "event_support")
 
 @schema
 class PreBehaviorIngestion(dj.Imported):
-    defintion = """
+    definition = """
     -> session.Session
     """
     class File(dj.Part):
