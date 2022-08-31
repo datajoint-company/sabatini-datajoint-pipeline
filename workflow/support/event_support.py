@@ -5,6 +5,10 @@ from element_interface.utils import find_full_path
 from .file_manifest import FileManifest, support_db_prefix
 import datajoint as dj
 
+wfs_full_name = "_".join(event.schema.database.split("_")[:2])
+_wf_external_inbox_path = f"{wfs_full_name}/inbox"
+_wf_external_outbox_path = f"{wfs_full_name}/outbox"
+
 __all__ = ["event_support"]
 
 schema = dj.schema(support_db_prefix + "event_support")
@@ -32,13 +36,11 @@ class PreBehaviorIngestion(dj.Imported):
             + trial.csv
         """
         session_dir = (session.SessionDirectory & key).fetch1("session_dir")
-        session_full_dir = find_full_path(get_raw_root_data_dir(), session_dir)
 
         file_keys, files = (
                 FileManifest
-                & f"remote_fullpath LIKE '%{session_full_dir}/Behavior/{f}%'"
-                for f in ('events.csv','trial.csv','block.csv')
-                & key
+                & [f"remote_fullpath LIKE '{_wf_external_inbox_path}%{session_dir}/Behavior/{f}'"
+                for f in ('events.csv','trial.csv','block.csv')]
             ).fetch("KEY", "file")
 
         if file_keys:

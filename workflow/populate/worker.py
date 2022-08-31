@@ -2,7 +2,7 @@ import datajoint as dj
 from datajoint_utilities.dj_worker import DataJointWorker, WorkerLog, ErrorLog
 from workflow import db_prefix
 from workflow.pipeline import session, ephys, scan, event, imaging, model as dlc_model, train as dlc_train
-from workflow.support import ephys_support, imaging_support, dlc_model_support
+from workflow.support import ephys_support, imaging_support, dlc_model_support, event_support
 
 logger = dj.logger
 
@@ -24,7 +24,9 @@ standard_worker = DataJointWorker('standard_worker',
                                   sleep_duration=30,
                                   autoclear_error_patterns=autoclear_error_patterns)
 
+standard_worker(event_support.PreBehaviorIngestion)
 standard_worker(event.BehaviorIngestion, max_calls=5)
+standard_worker(event_support.PreBehaviorIngestion.clean_up)
 
 standard_worker(ephys_support.PreProbeInsertion)
 standard_worker(ephys_support.PreProbeInsertion.clean_up)
@@ -61,7 +63,6 @@ spike_sorting_worker(ephys.Clustering, max_calls=6)
 standard_worker(imaging_support.PreScanInfo, max_calls=1)
 standard_worker(scan.ScanInfo, max_calls=5)
 standard_worker(imaging_support.PreScanInfo.clean_up)
-
 
 standard_worker(imaging_support.PreMotionCorrection, max_calls=2)
 standard_worker(imaging.MotionCorrection, max_calls=5)
