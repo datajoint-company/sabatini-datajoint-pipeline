@@ -29,6 +29,7 @@ standard_worker(event.BehaviorIngestion, max_calls=5)
 standard_worker(event_support.PreBehaviorIngestion.clean_up)
 
 standard_worker(ephys_support.PreProbeInsertion)
+standard_worker(ephys.ProbeInsertion)
 standard_worker(ephys_support.PreProbeInsertion.clean_up)
 
 standard_worker(ephys_support.PreEphysRecording)
