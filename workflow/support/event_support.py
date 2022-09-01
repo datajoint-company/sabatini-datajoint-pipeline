@@ -25,6 +25,8 @@ class PreBehaviorIngestion(dj.Imported):
     def clean_up(cls):
         _clean_up(cls, event.BehaviorIngestion)
 
+    key_source = session.Session & session.SessionDirectory
+
     def make(self, key):
         """
         Download all availible behavioral data files 
@@ -42,7 +44,7 @@ class PreBehaviorIngestion(dj.Imported):
 
         if file_keys:
             self.insert1(key)
-            self.File.insert([{**key, **file_key}] for file_key in file_keys)
+            self.File.insert([{**key, **file_key} for file_key in file_keys])
 
 def _clean_up(prepare_table, populate_table):
     """
