@@ -9,6 +9,26 @@ logger = dj.logger
 __all__ = ["standard_worker", "dlc_worker", "calcium_imaging_worker", \
      "spike_sorting_worker", "WorkerLog",  "ErrorLog"]
 
+def auto_generate_probe_insertions():
+    for skey in (session.Session & ephys_support.PreProbeInsertion - ephys.ProbeInsertion).fetch('KEY'):
+        try:
+            logger.debug(f"Making {skey} -> {ephys.ProbeInsertion.full_table_name}")
+            ephys.ProbeInsertion.auto_generate_entries(skey)
+        except Exception as error:
+            logger.debug(f"Error making {skey} -> {ephys.ProbeInsertion.full_table_name} - {str(error)}")
+            ErrorLog.log_exception(skey, ephys.ProbeInsertion.auto_generate_entries, error)
+        else:
+            logger.debug(f"Success making {skey} -> {ephys.ProbeInsertion.full_table_name}")
+
+
+def auto_generate_clustering_tasks():
+    for rkey in (ephys.EphysRecording - ephys.ClusteringTask).fetch('KEY'):
+        try:
+            ephys.ClusteringTask.auto_generate_entries(rkey, paramset_idx=2)
+        except Exception as error:
+            logger.error(str(error))
+            ErrorLog.log_exception(rkey, ephys.ClusteringTask.auto_generate_entries, error)
+
 # -------- Define process(s) --------
 org_name, workflow_name, _ = db_prefix.split("_")
 
@@ -29,13 +49,14 @@ standard_worker(event.BehaviorIngestion, max_calls=5)
 standard_worker(event_support.PreBehaviorIngestion.clean_up)
 
 standard_worker(ephys_support.PreProbeInsertion)
-standard_worker(ephys.ProbeInsertion)
+standard_worker(auto_generate_probe_insertions)
 standard_worker(ephys_support.PreProbeInsertion.clean_up)
 
 standard_worker(ephys_support.PreEphysRecording)
 standard_worker(ephys.EphysRecording, max_calls=10)
 standard_worker(ephys_support.PreEphysRecording.clean_up)
 
+standard_worker(auto_generate_clustering_tasks)
 
 standard_worker(ephys_support.PreCuratedClustering)
 standard_worker(ephys.CuratedClustering, max_calls=10)
