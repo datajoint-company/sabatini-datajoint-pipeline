@@ -135,3 +135,6 @@ docker/dlc_local_worker/.env
 
 # Mac
 .DS_Store
+
+# Mount efs
+mount_efs.sh
