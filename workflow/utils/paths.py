@@ -56,7 +56,8 @@ def get_scan_image_files(scan_key):
     if not sess_dir.exists():
         raise FileNotFoundError(f"Session directory not found ({sess_dir})")
 
-    tiff_filepaths = [fp.as_posix() for fp in (sess_dir / "Imaging").glob("*.tif")]
+    tiff_filepaths = [fp.as_posix() 
+        for fp in (sess_dir / "Imaging" / f"scan{scan_key['scan_id']}").glob("*.tif") if not fp.name.startswith('zstack')]
     if tiff_filepaths:
         return tiff_filepaths
     else:
