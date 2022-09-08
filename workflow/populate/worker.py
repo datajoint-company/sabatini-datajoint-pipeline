@@ -24,7 +24,7 @@ def auto_generate_probe_insertions():
 def auto_generate_clustering_tasks():
     for rkey in (ephys.EphysRecording - ephys.ClusteringTask).fetch('KEY'):
         try:
-            ephys.ClusteringTask.auto_generate_entries(rkey, paramset_idx=2)
+            ephys.ClusteringTask.auto_generate_entries(rkey, paramset_idx=0)
         except Exception as error:
             logger.error(str(error))
             ErrorLog.log_exception(rkey, ephys.ClusteringTask.auto_generate_entries, error)
