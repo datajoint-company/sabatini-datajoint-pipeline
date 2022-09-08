@@ -62,6 +62,8 @@ standard_worker(ephys_support.PreCuratedClustering)
 standard_worker(ephys.CuratedClustering, max_calls=10)
 standard_worker(ephys_support.PreCuratedClustering.clean_up)
 
+
+
 standard_worker(ephys_support.PreWaveformSet)
 standard_worker(ephys.WaveformSet, max_calls=1)
 standard_worker(ephys_support.PreWaveformSet.clean_up)
@@ -78,7 +80,10 @@ spike_sorting_worker = DataJointWorker('spike_sorting_worker',
                                        sleep_duration=30,
                                        autoclear_error_patterns=autoclear_error_patterns)
 
+spike_sorting_worker(ephys_support.PreClustering)
 spike_sorting_worker(ephys.Clustering, max_calls=6)
+spike_sorting_worker(ephys_support.PostClustering)
+spike_sorting_worker(ephys_support.PreClustering.clean_up)
 
 # Imaging analyses run by standard worker
 
