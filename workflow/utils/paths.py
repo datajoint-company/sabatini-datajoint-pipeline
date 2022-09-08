@@ -40,11 +40,6 @@ def get_session_directory(session_key: dict) -> str:
 def get_imaging_root_data_dir():
     return get_raw_root_data_dir()
 
-
-def get_imaging_processed_root_data_dir():
-    return get_processed_root_data_dir()
-
-
 def get_scan_image_files(scan_key):
     # Folder structure: root / subject / session / .tif (raw)
     data_dir = get_imaging_root_data_dir()

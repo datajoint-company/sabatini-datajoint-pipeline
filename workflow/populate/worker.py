@@ -116,7 +116,11 @@ calcium_imaging_worker = DataJointWorker(
     autoclear_error_patterns=autoclear_error_patterns,
 )
 
+calcium_imaging_worker(imaging_support.PreProcessing)
 calcium_imaging_worker(imaging.Processing, max_calls=5)
+calcium_imaging_worker(imaging_support.PostProcessing, max_calls=3)
+calcium_imaging_worker(imaging.PreProcessing.clean_up)
+
 
 # --- Deeplabcut ---
 
