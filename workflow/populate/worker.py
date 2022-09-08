@@ -62,8 +62,6 @@ standard_worker(ephys_support.PreCuratedClustering)
 standard_worker(ephys.CuratedClustering, max_calls=10)
 standard_worker(ephys_support.PreCuratedClustering.clean_up)
 
-
-
 standard_worker(ephys_support.PreWaveformSet)
 standard_worker(ephys.WaveformSet, max_calls=1)
 standard_worker(ephys_support.PreWaveformSet.clean_up)
