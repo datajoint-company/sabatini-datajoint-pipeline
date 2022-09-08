@@ -10,7 +10,7 @@ __all__ = ["standard_worker", "dlc_worker", "calcium_imaging_worker", \
      "spike_sorting_worker", "WorkerLog",  "ErrorLog"]
 
 def auto_generate_probe_insertions():
-    for skey in (session.Session & ephys_support.PreProbeInsertion - ephys.ProbeInsertion).fetch('KEY'):
+    for skey in (session.Session & ephys_support.PreProbeInsertion - ephys.ProbeInsertion).fetch1('KEY'):
         try:
             logger.debug(f"Making {skey} -> {ephys.ProbeInsertion.full_table_name}")
             ephys.ProbeInsertion.auto_generate_entries(skey)
@@ -22,7 +22,7 @@ def auto_generate_probe_insertions():
 
 
 def auto_generate_clustering_tasks():
-    for rkey in (ephys.EphysRecording - ephys.ClusteringTask).fetch('KEY'):
+    for rkey in (ephys.EphysRecording - ephys.ClusteringTask).fetch1('KEY'):
         try:
             ephys.ClusteringTask.auto_generate_entries(rkey, paramset_idx=2)
         except Exception as error:
