@@ -119,7 +119,7 @@ calcium_imaging_worker = DataJointWorker(
 calcium_imaging_worker(imaging_support.PreProcessing)
 calcium_imaging_worker(imaging.Processing, max_calls=5)
 calcium_imaging_worker(imaging_support.PostProcessing, max_calls=3)
-calcium_imaging_worker(imaging.PreProcessing.clean_up)
+calcium_imaging_worker(imaging_support.PreProcessing.clean_up)
 
 
 # --- Deeplabcut ---
