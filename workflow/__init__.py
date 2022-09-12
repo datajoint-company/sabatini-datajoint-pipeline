@@ -6,6 +6,7 @@ except Exception:
 import os
 import datajoint as dj
 
+dj.config['filepath_checksum_size_limit'] = 1000000000
 
 if 'custom' not in dj.config:
     dj.config['custom'] = {}
