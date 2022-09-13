@@ -17,3 +17,7 @@ datajoint-utilities @ git+https://github.com/datajoint-company/datajoint-utiliti
 element-array-ephys-support @ git+ssh://git@github.com/dj-sciops/element-array-ephys-support.git
 element-deeplabcut-support @ git+ssh://git@github.com/dj-sciops/element-deeplabcut-support.git
 element-calcium-imaging-support @ git+ssh://git@github.com/dj-sciops/element-calcium-imaging-support.git
+
+tdt==0.4.3
+tifffile==2021.11.2
+nd2==0.1.6
