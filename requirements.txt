@@ -18,4 +18,5 @@ element-array-ephys-support @ git+ssh://git@github.com/dj-sciops/element-array-e
 element-deeplabcut-support @ git+ssh://git@github.com/dj-sciops/element-deeplabcut-support.git
 element-calcium-imaging-support @ git+ssh://git@github.com/dj-sciops/element-calcium-imaging-support.git
 
+tifffile==2021.11.2
 nd2==0.1.6
