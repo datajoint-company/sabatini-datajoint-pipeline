@@ -12,10 +12,6 @@ ARG REPO_OWNER
 ARG REPO_NAME
 WORKDIR $HOME
 
-# Install Deeplabcut
-RUN git clone https://github.com/DeepLabCut/DeepLabCut.git
-RUN pip install ./DeepLabCut
-
 # Clone the workflow
 RUN git clone -b sciops-dev https://github.com/datajoint-company/sciops-dev_sabatini.git
 
