@@ -6,6 +6,8 @@ USER root
 RUN apt-get update && \
     apt-get install -y ssh git vim nano
 
+RUN pip install pyzmq==23.2.1
+
 USER anaconda:anaconda
 
 ARG REPO_OWNER
