@@ -1,4 +1,4 @@
-from workflow.pipeline import scan, imaging
+from workflow.pipeline import session, scan, imaging
 
 from .file_manifest import FileManifest, support_db_prefix
 
