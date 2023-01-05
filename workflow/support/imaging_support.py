@@ -7,6 +7,8 @@ __all__ = ['imaging_support']
 # ---- support pipeline for calcium-imaging ----
 from element_calcium_imaging_support import imaging_support
 
+Session = session.Session
+
 imaging_support.activate(support_db_prefix + "imaging_support", linking_module=__name__)
 
 # rework key_source
