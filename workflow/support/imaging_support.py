@@ -1,4 +1,4 @@
-from workflow.pipeline import scan, imaging
+from workflow.pipeline import session, scan, imaging
 
 from .file_manifest import FileManifest, support_db_prefix
 
@@ -6,6 +6,8 @@ __all__ = ['imaging_support']
 
 # ---- support pipeline for calcium-imaging ----
 from element_calcium_imaging_support import imaging_support
+
+Session = session.Session
 
 imaging_support.activate(support_db_prefix + "imaging_support", linking_module=__name__)
 
