@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datajoint as dj
 import pandas as pd
 import numpy as np
@@ -12,7 +14,6 @@ from workflow.pipeline import session, subject, lab, reference
 from workflow.utils.paths import get_raw_root_data_dir
 import workflow.utils.photometry_preprocessing as pp
 from workflow.utils import demodulation
-import typing as T
 
 
 logger = dj.logger
@@ -418,6 +419,7 @@ class FiberPhotometrySynced(dj.Imported):
             )
 
         self.SyncedTrace.insert(synced_trace_list)
+
 
 def _split_penalty_states(
     df: pd.DataFrame, behavior_df: pd.DataFrame, penalty: str = "ENLP"

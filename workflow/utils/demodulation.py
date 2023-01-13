@@ -4,6 +4,8 @@ Created on Fri Apr 15 16:01:51 2022
 @author: celiaberon
 """
 
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
 from copy import deepcopy
