@@ -53,19 +53,11 @@ class EmissionColor(dj.Lookup):
 
 
 @schema
-class DataFormat(dj.Lookup):
-    definition = """
-    data_format  : varchar(8)
-    """
-    contents = zip(["tdt", "mat"])
-
-
-@schema
 class FiberPhotometry(dj.Imported):
     definition = """
     -> session.Session
     ---
-    -> DataFormat
+    -> data_format          : varchar(8)    # format of the raw data to import from (e.g., tdt, mat)
     -> [nullable] LightSource
     raw_sample_rate=null    : float         # sample rate of the raw data (in Hz) 
     beh_synch_signal=null   : longblob      # signal for behavioral synchronization from raw data
