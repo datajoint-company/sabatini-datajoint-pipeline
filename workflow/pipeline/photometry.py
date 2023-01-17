@@ -33,7 +33,7 @@ class LightSource(dj.Lookup):
     definition = """
     light_source_name   : varchar(16)
     """
-    contents = zip(["Plexon LED", "Laser"])
+    contents = zip(["Plexon LED", "Laser", ""])
 
 
 @schema
@@ -57,7 +57,7 @@ class FiberPhotometry(dj.Imported):
     definition = """
     -> session.Session
     ---
-    -> data_format          : varchar(8)    # format of the raw data to import from (e.g., tdt, mat)
+    data_format             : varchar(8)    # format of the raw data to import from (e.g., tdt, mat)
     -> [nullable] LightSource
     raw_sample_rate=null    : float         # sample rate of the raw data (in Hz) 
     beh_synch_signal=null   : longblob      # signal for behavioral synchronization from raw data
@@ -75,7 +75,7 @@ class FiberPhotometry(dj.Imported):
     class DemodulatedTrace(dj.Part):
         definition = """ # demodulated photometry traces
         -> master.Fiber
-        trace_name          : varchar(8)  # (e.g., raw, detrend)
+        trace_name          : varchar(16)  # (e.g., raw, detrend)
         -> EmissionColor
         ---
         -> [nullable] SensorProtein          
@@ -86,18 +86,21 @@ class FiberPhotometry(dj.Imported):
 
     def make(self, key):
 
+        logger.info(
+            f'Start ingesting <FiberPhotometry> table on subject {key["subject"]} - session {key["session_id"]}'
+        )
+
         # Find data dir
         session_dir = (session.SessionDirectory & key).fetch1("session_dir")
         session_full_dir: Path = find_full_path(get_raw_root_data_dir(), session_dir)
         photometry_dir = session_full_dir / "Photometry"
 
         # Read from the meta_info.toml in the photometry folder if exists
-        meta_info_file = list(photometry_dir.glob("*.toml"))[0]
         meta_info = {}
         try:
-            with open(meta_info_file.as_posix()) as f:
+            with open(list(photometry_dir.glob("*.toml"))[0].as_posix()) as f:
                 meta_info = tomli.loads(f.read())
-        except FileNotFoundError:
+        except (FileNotFoundError, IndexError):
             logger.info("meta info is missing")
         light_source_name = meta_info.get("Fiber", {}).get("light_source", "")
 
@@ -136,6 +139,8 @@ class FiberPhotometry(dj.Imported):
                 next(photometry_dir.glob("*timeseries_2.mat")), simplify_cells=True
             )["timeSeries"]
 
+            raw_sample_rate = None
+            beh_synch_signal = None
             demod_sample_rate = 1 / data[0]["dt"]
             photometry_df = pd.DataFrame(data)
 
@@ -182,7 +187,7 @@ class FiberPhotometry(dj.Imported):
                     ].values
                 elif data_format == "mat":
                     photometry_trace = photometry_df.query(
-                        f"hemisphere == '{hemisphere}' & color == '{trace_name.split('_')[1]}'"
+                        f"hemisphere == '{hemisphere}' & emission_color == '{trace_name.split('_')[1]}'"
                     )["raw_data"].values[0]
 
                 # Populate EmissionColor if present
@@ -210,9 +215,6 @@ class FiberPhotometry(dj.Imported):
                 )
 
                 if sensor_protein:
-                    logger.info(
-                        f"{sensor_protein} is inserted into {__name__}.SensorProtein"
-                    )
                     SensorProtein.insert1(
                         {"sensor_protein_name": sensor_protein}, skip_duplicates=True
                     )
@@ -225,9 +227,6 @@ class FiberPhotometry(dj.Imported):
                 )
 
                 if excitation_wavelength:
-                    logger.info(
-                        f"{excitation_wavelength} is inserted into {__name__}.ExcitationWavelength"
-                    )
                     ExcitationWavelength.insert1(
                         {"excitation_wavelength": excitation_wavelength},
                         skip_duplicates=True,
@@ -282,13 +281,17 @@ class FiberPhotometrySynced(dj.Imported):
         definition = """ # demodulated photometry traces
         -> master
         -> FiberPhotometry.Fiber
-        trace_name          : varchar(8)  # (e.g., raw, detrend)
+        trace_name          : varchar(16)  # (e.g., raw, detrend)
         -> EmissionColor
         ---
         trace      : longblob  
         """
 
     def make(self, key):
+
+        logger.info(
+            f'Start ingesting <FiberPhotometrySynced> table on subject {key["subject"]} - session {key["session_id"]}'
+        )
 
         # Find data dir
         subject_id, session_dir = (session.SessionDirectory & key).fetch1(
@@ -457,7 +460,7 @@ class FiberPhotometrySynced(dj.Imported):
             trace_names = [
                 "processed_" + c + s.upper()[0]
                 for c, s in zip(
-                    photometry_df["color"].unique(),
+                    photometry_df["emission_color"].unique(),
                     photometry_df["hemisphere"].unique(),
                 )
             ]  # ["raw_greenL", "raw_redR"]
@@ -465,6 +468,7 @@ class FiberPhotometrySynced(dj.Imported):
             del data
 
         # Populate FiberPhotometrySynced
+        logger.info(f"Populate {__name__}.FiberPhotometrySynced")
         self.insert1(
             {
                 **key,
@@ -480,12 +484,13 @@ class FiberPhotometrySynced(dj.Imported):
         for trace_name in trace_names:
 
             hemisphere = {"R": "right", "L": "left"}[trace_name[-1]]
+            emission_color = _Color(trace_name.split("_")[1][0].lower()).name
 
             if data_format == "tdt":
                 photometry_trace = downsampled_states_df[trace_name].values
             elif data_format == "mat":
                 photometry_trace = photometry_df.query(
-                    f"hemisphere == '{hemisphere}' & color == '{trace_name.split('_')[1]}'"
+                    f"hemisphere == '{hemisphere}' & emission_color == '{emission_color}'"
                 )["processed_data"].values[0]
 
             synced_trace_list.append(
@@ -494,11 +499,12 @@ class FiberPhotometrySynced(dj.Imported):
                     "fiber_id": get_fiber_id(trace_name[-1]),
                     "hemisphere": hemisphere,
                     "trace_name": trace_name.split("_")[0],
-                    "emission_color": _Color(trace_name.split("_")[1][0].lower()).name,
+                    "emission_color": emission_color,
                     "trace": photometry_trace,
                 }
             )
 
+        logger.info(f"Populate {__name__}.FiberPhotometrySynced.SyncedTrace")
         self.SyncedTrace.insert(synced_trace_list)
 
 
